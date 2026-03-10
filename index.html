@@ -746,6 +746,7 @@
         <span class="mode-badge" id="mode-badge">Viewer</span>
         <button class="sync-btn" id="sync-btn" onclick="openGistModal()">⚙️ Setup Sync</button>
         <button class="sync-btn" id="save-gist-btn" onclick="syncToGist()" style="display:none">☁️ Sync</button>
+        <button class="sync-btn" id="signout-btn" onclick="signOut()" style="display:none">🔒 Sign Out</button>
       </div>
     </div>
   </header>
@@ -1365,10 +1366,22 @@ async function unlockApp() {
     await loadFromGist();
   }
 
+  // Persist session so user stays logged in on refresh
+  localStorage.setItem('bills-session', JSON.stringify({
+    role: appState.isEditor ? 'editor' : 'viewer',
+    hash: appState.isEditor ? CONFIG.EDITOR_TOKEN_HASH : CONFIG.VIEW_PASSWORD_HASH
+  }));
+  document.getElementById('signout-btn').style.display = 'inline-block';
+
   setEditMode(appState.isEditor);
   setDefaultDates();
   populateFormsFromLastEntry();
   renderAll();
+}
+
+function signOut() {
+  localStorage.removeItem('bills-session');
+  location.reload();
 }
 
 function setEditMode(isEditor) {
@@ -1890,9 +1903,21 @@ async function loadFromGist() {
     const gist = await res.json();
     const fileContent = gist.files['bills-health-data.json']?.content;
     if (fileContent) {
-      appState.data = JSON.parse(fileContent);
-      // Also sync Gist data back to localStorage so it survives offline
-      localStorage.setItem('bills-health-data', fileContent);
+      const gistData = JSON.parse(fileContent);
+      // Merge Gist + localStorage by entry ID — never lose data from either source
+      const merge = (local, remote) => {
+        const map = new Map();
+        [...(remote || []), ...(local || [])].forEach(e => map.set(e.id, e));
+        return Array.from(map.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
+      };
+      appState.data = {
+        daily:   merge(appState.data.daily,   gistData.daily),
+        weekly:  merge(appState.data.weekly,  gistData.weekly),
+        journal: merge(appState.data.journal, gistData.journal),
+        visits:  merge(appState.data.visits,  gistData.visits),
+      };
+      // Write merged result back to localStorage
+      localStorage.setItem('bills-health-data', JSON.stringify(appState.data));
     }
   } catch(err) {
     console.warn('Could not load from Gist, using localStorage:', err);
@@ -1903,7 +1928,25 @@ async function loadFromGist() {
 //  INIT
 // ══════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
-  // Focus password field on load
+  // Try auto-login from stored session
+  try {
+    const session = JSON.parse(localStorage.getItem('bills-session') || 'null');
+    if (session) {
+      if (session.role === 'editor' && session.hash === CONFIG.EDITOR_TOKEN_HASH) {
+        appState.isEditor = true;
+        appState.isUnlocked = true;
+        unlockApp();
+        return;
+      } else if (session.role === 'viewer' && session.hash === CONFIG.VIEW_PASSWORD_HASH) {
+        appState.isEditor = false;
+        appState.isUnlocked = true;
+        unlockApp();
+        return;
+      } else {
+        localStorage.removeItem('bills-session'); // password changed, stale session
+      }
+    }
+  } catch(e) {}
   setTimeout(() => document.getElementById('lock-password').focus(), 100);
 });
 </script>
