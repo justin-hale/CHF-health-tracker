@@ -702,22 +702,13 @@
   <div class="lock-card">
     <span class="heart-icon">❤️</span>
     <h1>Bill's Health Tracker</h1>
-    <p>This is a private family health record. Enter the password to view, or the editor token to add and update entries.</p>
+    <p>This is a private family health record. Enter the password to view.</p>
     <div class="lock-input-group">
       <label>Password</label>
-      <input type="password" id="lock-password" placeholder="Enter password to view" />
+      <input type="password" id="lock-password" placeholder="Enter password" />
     </div>
     <button class="lock-btn" onclick="attemptUnlock()">Enter</button>
     <div class="lock-error" id="lock-error">Incorrect password. Please try again.</div>
-    <div class="lock-mode-toggle">
-      Editor? <a onclick="showTokenField()">Use your editor token instead →</a>
-    </div>
-    <div id="token-field" style="display:none; margin-top:16px;">
-      <div class="lock-input-group">
-        <label>Editor Token</label>
-        <input type="password" id="lock-token" placeholder="Enter editor token" />
-      </div>
-    </div>
   </div>
 </div>
 
@@ -1331,31 +1322,24 @@ let appState = {
 // ══════════════════════════════════════════════════════
 //  LOCK SCREEN
 // ══════════════════════════════════════════════════════
-function showTokenField() {
-  document.getElementById('token-field').style.display = 'block';
-}
-
 async function attemptUnlock() {
   const pw = document.getElementById('lock-password').value;
-  const token = document.getElementById('lock-token').value;
   const error = document.getElementById('lock-error');
-  
-  const pwHash = pw ? await hashPassword(pw) : '';
-  const tokenHash = token ? await hashPassword(token) : '';
-  
-  if (token && tokenHash === CONFIG.EDITOR_TOKEN_HASH) {
+
+  if (!pw) return;
+  const hash = await hashPassword(pw);
+
+  if (hash === CONFIG.EDITOR_TOKEN_HASH) {
     appState.isEditor = true;
     appState.isUnlocked = true;
     unlockApp();
-  } else if (pwHash === CONFIG.VIEW_PASSWORD_HASH) {
+  } else if (hash === CONFIG.VIEW_PASSWORD_HASH) {
     appState.isEditor = false;
     appState.isUnlocked = true;
     unlockApp();
   } else {
     error.style.display = 'block';
-    error.textContent = token 
-      ? 'Incorrect editor token. Please check and try again.'
-      : 'Incorrect password. Please try again.';
+    error.textContent = 'Incorrect password. Please try again.';
   }
 }
 
