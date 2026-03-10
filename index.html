@@ -715,20 +715,15 @@
 <!-- ── GIST CONFIG MODAL ───────────────────────────────── -->
 <div class="modal-overlay hidden" id="gist-modal">
   <div class="modal-card">
-    <h2>⚙️ GitHub Gist Storage Setup</h2>
-    <p>To save and sync data across devices, connect a GitHub Gist. You only need to do this once. Your GitHub Personal Access Token is stored locally in your browser — it never leaves your device except to talk to GitHub.</p>
+    <h2>⚙️ Enable Cloud Sync</h2>
+    <p>Enter your GitHub Personal Access Token to enable saving data to the cloud. This is stored only on this device and never sent anywhere except GitHub.</p>
     <div class="field">
       <label>GitHub Personal Access Token</label>
       <span class="hint">Needs <code>gist</code> scope only — <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--teal)">create one here</a></span>
       <input type="password" id="gist-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
     </div>
-    <div class="field">
-      <label>Gist ID (optional)</label>
-      <span class="hint">Leave blank to create a new Gist automatically</span>
-      <input type="text" id="gist-id-input" placeholder="e.g. a1b2c3d4e5f6..." />
-    </div>
     <div class="modal-actions">
-      <button class="btn-save" onclick="saveGistConfig()">Save Configuration</button>
+      <button class="btn-save" onclick="saveGistConfig()">Save</button>
       <button class="btn-secondary" onclick="closeGistModal()">Cancel</button>
     </div>
   </div>
@@ -1288,8 +1283,8 @@ const CONFIG = {
   // Change this to something unique and private!
   EDITOR_TOKEN_HASH: '__EDITOR_TOKEN_HASH__',
 
-  // GitHub Gist storage will be configured via the settings UI
-  // These get saved to localStorage once configured
+  // Hardcoded Gist ID — data is always loaded from/saved to this Gist
+  GIST_ID: '84595e25d454041cf0fe03d2975961dc',
 };
 
 // ══════════════════════════════════════════════════════
@@ -1356,15 +1351,16 @@ async function unlockApp() {
   // Always load localStorage first as a baseline
   loadFromLocalStorage();
 
-  // Load Gist config from localStorage
-  appState.gistToken = localStorage.getItem('bills-gist-token');
-  appState.gistId = localStorage.getItem('bills-gist-id');
+  // Auto-configure Gist from hardcoded ID; PAT is optional (only needed for writing)
+  appState.gistId = CONFIG.GIST_ID;
+  localStorage.setItem('bills-gist-id', CONFIG.GIST_ID);
+  appState.gistToken = localStorage.getItem('bills-gist-token') || null;
 
-  if (appState.gistToken && appState.gistId) {
+  if (appState.gistToken) {
     document.getElementById('sync-btn').style.display = 'none';
     document.getElementById('save-gist-btn').style.display = 'inline-block';
-    await loadFromGist();
   }
+  await loadFromGist();
 
   // Persist session so user stays logged in on refresh
   localStorage.setItem('bills-session', JSON.stringify({
@@ -1811,7 +1807,6 @@ function loadFromLocalStorage() {
 // ══════════════════════════════════════════════════════
 function openGistModal() {
   document.getElementById('gist-token-input').value = localStorage.getItem('bills-gist-token') || '';
-  document.getElementById('gist-id-input').value = localStorage.getItem('bills-gist-id') || '';
   document.getElementById('gist-modal').classList.remove('hidden');
 }
 
@@ -1821,21 +1816,16 @@ function closeGistModal() {
 
 async function saveGistConfig() {
   const token = document.getElementById('gist-token-input').value.trim();
-  const gistId = document.getElementById('gist-id-input').value.trim();
-  
   if (!token) { alert('Please enter a GitHub token.'); return; }
-  
+
   localStorage.setItem('bills-gist-token', token);
-  if (gistId) localStorage.setItem('bills-gist-id', gistId);
-  
   appState.gistToken = token;
-  appState.gistId = gistId || null;
-  
+  appState.gistId = CONFIG.GIST_ID;
+
   closeGistModal();
   document.getElementById('sync-btn').style.display = 'none';
   document.getElementById('save-gist-btn').style.display = 'inline-block';
-  
-  // First sync — pull existing or push new
+
   await syncToGist();
 }
 
@@ -1896,9 +1886,8 @@ async function syncToGist() {
 
 async function loadFromGist() {
   try {
-    const res = await fetch('https://api.github.com/gists/' + appState.gistId, {
-      headers: { 'Authorization': 'token ' + appState.gistToken }
-    });
+    const headers = appState.gistToken ? { 'Authorization': 'token ' + appState.gistToken } : {};
+    const res = await fetch('https://api.github.com/gists/' + appState.gistId, { headers });
     if (!res.ok) return; // keep localStorage baseline
     const gist = await res.json();
     const fileContent = gist.files['bills-health-data.json']?.content;
