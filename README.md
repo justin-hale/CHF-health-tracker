@@ -1,4 +1,5 @@
 # Bill's Health Tracker
+# Version 2
 
 A private, family health tracking SPA for monitoring CHF (Congestive Heart Failure). Built as a static single-page application deployable via GitHub Pages, with GitHub Gist as the data backend.
 
