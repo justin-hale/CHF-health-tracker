@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') { location.replace('https:' + location.href.substring(5)); }</script>
   <title>Bill's Health Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
@@ -1303,6 +1304,10 @@ const CONFIG = {
 //  UTILITIES
 // ══════════════════════════════════════════════════════
 async function hashPassword(password) {
+  if (!crypto.subtle) {
+    alert('This page requires a secure connection (HTTPS). Please access it via https://');
+    throw new Error('crypto.subtle unavailable: page must be served over HTTPS');
+  }
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
