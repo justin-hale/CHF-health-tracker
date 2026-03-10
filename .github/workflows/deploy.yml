@@ -33,15 +33,15 @@ jobs:
 
       - name: Inject Hashes into HTML
         run: |
-          sed -i "s/__VIEW_PASSWORD_HASH__/$VIEW_PASSWORD_HASH/" index.html
-          sed -i "s/__EDITOR_TOKEN_HASH__/$EDITOR_TOKEN_HASH/" index.html
+          mkdir -p _site
+          sed "s/__VIEW_PASSWORD_HASH__/$VIEW_PASSWORD_HASH/; s/__EDITOR_TOKEN_HASH__/$EDITOR_TOKEN_HASH/" index.html > _site/index.html
           # Verify injection worked
-          if grep -q '__VIEW_PASSWORD_HASH__' index.html; then echo "ERROR: VIEW_PASSWORD_HASH placeholder was not replaced"; exit 1; fi
-          if grep -q '__EDITOR_TOKEN_HASH__' index.html; then echo "ERROR: EDITOR_TOKEN_HASH placeholder was not replaced"; exit 1; fi
+          if grep -q '__VIEW_PASSWORD_HASH__' _site/index.html; then echo "ERROR: VIEW_PASSWORD_HASH placeholder was not replaced"; exit 1; fi
+          if grep -q '__EDITOR_TOKEN_HASH__' _site/index.html; then echo "ERROR: EDITOR_TOKEN_HASH placeholder was not replaced"; exit 1; fi
           echo "Hash injection verified successfully"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: ./_site
