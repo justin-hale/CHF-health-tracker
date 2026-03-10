@@ -1734,6 +1734,24 @@ function formatSymptoms(e) {
 // ══════════════════════════════════════════════════════
 function saveToLocalStorage() {
   localStorage.setItem('bills-health-data', JSON.stringify(appState.data));
+  if (appState.gistToken && appState.gistId) pushToGist();
+}
+
+async function pushToGist() {
+  try {
+    await fetch('https://api.github.com/gists/' + appState.gistId, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': 'token ' + appState.gistToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        files: { 'bills-health-data.json': { content: JSON.stringify(appState.data, null, 2) } }
+      })
+    });
+  } catch(err) {
+    console.warn('Auto-sync to Gist failed:', err);
+  }
 }
 
 function loadFromLocalStorage() {
