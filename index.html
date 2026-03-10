@@ -1904,15 +1904,21 @@ async function loadFromGist() {
     const fileContent = gist.files['bills-health-data.json']?.content;
     if (fileContent) {
       const gistData = JSON.parse(fileContent);
-      // Merge Gist + localStorage by entry ID — never lose data from either source
+      // Merge by ID, then for one-per-date types deduplicate by date (keep highest ID = newest save)
       const merge = (local, remote) => {
         const map = new Map();
         [...(remote || []), ...(local || [])].forEach(e => map.set(e.id, e));
         return Array.from(map.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
       };
+      const mergeOnePerDate = (local, remote) => {
+        const all = merge(local, remote);
+        const dateMap = new Map();
+        all.forEach(e => { if (!dateMap.has(e.date) || e.id > dateMap.get(e.date).id) dateMap.set(e.date, e); });
+        return Array.from(dateMap.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
+      };
       appState.data = {
-        daily:   merge(appState.data.daily,   gistData.daily),
-        weekly:  merge(appState.data.weekly,  gistData.weekly),
+        daily:   mergeOnePerDate(appState.data.daily,   gistData.daily),
+        weekly:  mergeOnePerDate(appState.data.weekly,  gistData.weekly),
         journal: merge(appState.data.journal, gistData.journal),
         visits:  merge(appState.data.visits,  gistData.visits),
       };
