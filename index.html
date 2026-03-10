@@ -1343,29 +1343,31 @@ async function attemptUnlock() {
   }
 }
 
-function unlockApp() {
+async function unlockApp() {
   document.getElementById('lock-screen').classList.add('hidden');
   const app = document.getElementById('app');
   app.classList.add('visible');
-  
+
   const badge = document.getElementById('mode-badge');
   badge.textContent = appState.isEditor ? '✏️ Editor' : '👁 View Only';
   badge.className = 'mode-badge ' + (appState.isEditor ? 'editor' : 'reader');
-  
+
+  // Always load localStorage first as a baseline
+  loadFromLocalStorage();
+
   // Load Gist config from localStorage
   appState.gistToken = localStorage.getItem('bills-gist-token');
   appState.gistId = localStorage.getItem('bills-gist-id');
-  
+
   if (appState.gistToken && appState.gistId) {
     document.getElementById('sync-btn').style.display = 'none';
     document.getElementById('save-gist-btn').style.display = 'inline-block';
-    loadFromGist();
-  } else {
-    loadFromLocalStorage();
+    await loadFromGist();
   }
-  
+
   setEditMode(appState.isEditor);
   setDefaultDates();
+  populateFormsFromLastEntry();
   renderAll();
 }
 
@@ -1403,6 +1405,36 @@ function setDefaultDates() {
   document.getElementById('weekly-date').value = today;
   document.getElementById('journal-date').value = today;
   document.getElementById('visit-date').value = today;
+}
+
+function populateFormsFromLastEntry() {
+  const daily = appState.data.daily[0];
+  if (daily) {
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined && val !== '') el.value = val; };
+    set('daily-bp-sys',  daily.bpSys);
+    set('daily-bp-dia',  daily.bpDia);
+    set('daily-hr',      daily.hr);
+    set('daily-o2',      daily.o2);
+    set('daily-weight',  daily.weight);
+    set('daily-sob',     daily.sob);
+    set('daily-swelling',daily.swelling);
+    set('daily-energy',  daily.energy);
+    set('daily-sleep',   daily.sleep);
+    set('daily-chest',   daily.chest);
+    set('daily-meds',    daily.meds);
+  }
+
+  const weekly = appState.data.weekly[0];
+  if (weekly) {
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined && val !== '') el.value = val; };
+    set('weekly-active-days',    weekly.activeDays);
+    set('weekly-activity-type',  weekly.activityType);
+    set('weekly-sodium',         weekly.sodium);
+    set('weekly-fluids',         weekly.fluids);
+    set('weekly-alcohol',        weekly.alcohol);
+    set('weekly-tobacco',        weekly.tobacco);
+    set('weekly-meds',           weekly.meds);
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1854,17 +1886,16 @@ async function loadFromGist() {
     const res = await fetch('https://api.github.com/gists/' + appState.gistId, {
       headers: { 'Authorization': 'token ' + appState.gistToken }
     });
-    if (!res.ok) return;
+    if (!res.ok) return; // keep localStorage baseline
     const gist = await res.json();
     const fileContent = gist.files['bills-health-data.json']?.content;
     if (fileContent) {
-      const parsed = JSON.parse(fileContent);
-      appState.data = parsed;
-      renderAll();
+      appState.data = JSON.parse(fileContent);
+      // Also sync Gist data back to localStorage so it survives offline
+      localStorage.setItem('bills-health-data', fileContent);
     }
   } catch(err) {
-    console.warn('Could not load from Gist:', err);
-    loadFromLocalStorage();
+    console.warn('Could not load from Gist, using localStorage:', err);
   }
 }
 
