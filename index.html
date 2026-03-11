@@ -410,6 +410,17 @@
     .reference-item.warn { border-left-color: var(--amber); }
     .reference-item.warn .ref-range { color: var(--amber); }
 
+    .field-hint {
+      font-size: 12px;
+      margin-top: 5px;
+      min-height: 16px;
+      font-weight: 700;
+      display: none;
+    }
+    .field-hint.ok    { display: block; color: var(--green); }
+    .field-hint.warn  { display: block; color: var(--amber); }
+    .field-hint.error { display: block; color: var(--rust); }
+
     /* ── SAVE BUTTON ─────────────────────────────── */
     .save-row {
       display: flex;
@@ -812,40 +823,36 @@
         </div>
 
         <div class="card-title" style="font-size:15px; margin-bottom:12px;">❤️ Heart & Blood Pressure</div>
-        <div class="reference-grid">
-          <div class="reference-item"><div class="ref-label">Target BP</div><div class="ref-range">&lt; 130/80 mmHg</div><div class="ref-note">Aim below 130 systolic</div></div>
-          <div class="reference-item"><div class="ref-label">Resting Heart Rate</div><div class="ref-range">60–100 bpm</div><div class="ref-note">50–70 ideal for CHF</div></div>
-          <div class="reference-item warn"><div class="ref-label">Call Doctor If BP</div><div class="ref-range">&gt; 180/120</div><div class="ref-note">Or below 90/60</div></div>
-        </div>
 
         <div class="form-grid" style="margin-bottom:24px;">
           <div class="field">
             <label>Systolic BP <span class="hint">(top number)</span></label>
             <input type="number" id="daily-bp-sys" placeholder="e.g. 130" min="60" max="250" oninput="checkDailyAlerts()" />
+            <div class="field-hint" id="hint-bp-sys"></div>
           </div>
           <div class="field">
             <label>Diastolic BP <span class="hint">(bottom number)</span></label>
             <input type="number" id="daily-bp-dia" placeholder="e.g. 80" min="40" max="150" oninput="checkDailyAlerts()" />
+            <div class="field-hint" id="hint-bp-dia"></div>
           </div>
           <div class="field">
             <label>Heart Rate <span class="hint">bpm</span></label>
             <input type="number" id="daily-hr" placeholder="e.g. 72" min="30" max="200" oninput="checkDailyAlerts()" />
+            <div class="field-hint" id="hint-hr"></div>
           </div>
           <div class="field">
             <label>Oxygen Saturation <span class="hint">% (if measured)</span></label>
             <input type="number" id="daily-o2" placeholder="e.g. 97" min="80" max="100" oninput="checkDailyAlerts()" />
+            <div class="field-hint" id="hint-o2"></div>
           </div>
         </div>
 
         <div class="card-title" style="font-size:15px; margin-bottom:12px;">⚖️ Weight</div>
-        <div class="reference-grid">
-          <div class="reference-item warn"><div class="ref-label">Warning: Weight Gain</div><div class="ref-range">+2 lbs in 24hrs</div><div class="ref-note">Call doctor same day</div></div>
-          <div class="reference-item warn"><div class="ref-label">Warning: Weight Gain</div><div class="ref-range">+5 lbs in 1 week</div><div class="ref-note">Call doctor same day</div></div>
-        </div>
         <div class="form-grid" style="margin-bottom:24px;">
           <div class="field">
             <label>Morning Weight <span class="hint">lbs — after bathroom, before eating</span></label>
             <input type="number" id="daily-weight" placeholder="e.g. 244" step="0.1" oninput="checkDailyAlerts()" />
+            <div class="field-hint" id="hint-weight"></div>
           </div>
         </div>
 
@@ -958,10 +965,6 @@
         </div>
 
         <div class="card-title" style="font-size:15px; margin-bottom:12px;">🏃 Activity & Exercise</div>
-        <div class="reference-grid">
-          <div class="reference-item"><div class="ref-label">Target Activity</div><div class="ref-range">150 min/week</div><div class="ref-note">Light walking counts!</div></div>
-          <div class="reference-item"><div class="ref-label">Step Goal</div><div class="ref-range">5,000–7,500/day</div><div class="ref-note">Work up gradually</div></div>
-        </div>
         <div class="form-grid" style="margin-bottom:24px;">
           <div class="field">
             <label>Days Active This Week</label>
@@ -990,15 +993,12 @@
           </div>
           <div class="field">
             <label>Avg Daily Steps <span class="hint">(if tracked)</span></label>
-            <input type="number" id="weekly-steps" placeholder="e.g. 3500" />
+            <input type="number" id="weekly-steps" placeholder="e.g. 3500" oninput="checkStepsHint()" />
+            <div class="field-hint" id="hint-steps"></div>
           </div>
         </div>
 
         <div class="card-title" style="font-size:15px; margin-bottom:12px;">🍽️ Diet & Fluid Intake</div>
-        <div class="reference-grid">
-          <div class="reference-item warn"><div class="ref-label">Sodium Limit</div><div class="ref-range">&lt; 2,000 mg/day</div><div class="ref-note">CHF requirement</div></div>
-          <div class="reference-item warn"><div class="ref-label">Fluid Limit</div><div class="ref-range">~1.5–2 L/day</div><div class="ref-note">Unless doctor says otherwise</div></div>
-        </div>
         <div class="form-grid" style="margin-bottom:24px;">
           <div class="field">
             <label>Sodium Adherence</label>
@@ -1524,37 +1524,130 @@ function populateFormsFromLastEntry() {
 // ══════════════════════════════════════════════════════
 //  ALERT CHECKING
 // ══════════════════════════════════════════════════════
+function setHint(id, level, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'field-hint' + (level ? ' ' + level : '');
+  el.textContent = msg;
+}
+
 function checkDailyAlerts() {
   const sys = parseInt(document.getElementById('daily-bp-sys').value);
   const dia = parseInt(document.getElementById('daily-bp-dia').value);
   const hr = parseInt(document.getElementById('daily-hr').value);
   const o2 = parseInt(document.getElementById('daily-o2').value);
   const chest = document.getElementById('daily-chest').value;
-  
-  const alerts = [];
-  
-  if (sys >= 180 || dia >= 120) alerts.push('⚠️ BP is critically high ('+sys+'/'+dia+'). Call doctor now.');
-  if (sys < 90 || dia < 60) alerts.push('⚠️ BP is very low ('+sys+'/'+dia+'). Call doctor.');
-  if (hr > 120) alerts.push('⚠️ Heart rate is high ('+hr+' bpm). Monitor closely.');
-  if (o2 && o2 < 92) alerts.push('⚠️ Oxygen saturation is low ('+o2+'%). Call doctor.');
-  if (chest === 'yes') alerts.push('🚨 Chest pain reported. Consider calling 911 if severe.');
-  
-  // Weight check
+
+  // Systolic BP hints
+  if (isNaN(sys)) {
+    setHint('hint-bp-sys', '', '');
+  } else if (sys >= 180) {
+    setHint('hint-bp-sys', 'error', '⚠️ Critically high — call doctor now (≥ 180)');
+  } else if (sys < 90) {
+    setHint('hint-bp-sys', 'error', '⚠️ Very low — call doctor (< 90)');
+  } else if (sys >= 130) {
+    setHint('hint-bp-sys', 'warn', 'Above target — aim for < 130 mmHg');
+  } else {
+    setHint('hint-bp-sys', 'ok', '✓ Within target (< 130 mmHg)');
+  }
+
+  // Diastolic BP hints
+  if (isNaN(dia)) {
+    setHint('hint-bp-dia', '', '');
+  } else if (dia >= 120) {
+    setHint('hint-bp-dia', 'error', '⚠️ Critically high — call doctor now (≥ 120)');
+  } else if (dia < 60) {
+    setHint('hint-bp-dia', 'error', '⚠️ Very low — call doctor (< 60)');
+  } else if (dia >= 80) {
+    setHint('hint-bp-dia', 'warn', 'Above target — aim for < 80 mmHg');
+  } else {
+    setHint('hint-bp-dia', 'ok', '✓ Within target (< 80 mmHg)');
+  }
+
+  // Heart rate hints
+  if (isNaN(hr)) {
+    setHint('hint-hr', '', '');
+  } else if (hr > 120) {
+    setHint('hint-hr', 'error', '⚠️ High — monitor closely, contact doctor (> 120 bpm)');
+  } else if (hr > 100) {
+    setHint('hint-hr', 'warn', 'Above normal range — target 60–100 bpm');
+  } else if (hr < 50) {
+    setHint('hint-hr', 'warn', 'Below normal range — target 60–100 bpm (50–70 ok for CHF)');
+  } else {
+    setHint('hint-hr', 'ok', '✓ Within target (60–100 bpm)');
+  }
+
+  // O2 hints
+  if (isNaN(o2)) {
+    setHint('hint-o2', '', '');
+  } else if (o2 < 92) {
+    setHint('hint-o2', 'error', '⚠️ Low saturation — call doctor (< 92%)');
+  } else if (o2 < 95) {
+    setHint('hint-o2', 'warn', 'Below target — aim for ≥ 95%');
+  } else {
+    setHint('hint-o2', 'ok', '✓ Good saturation (≥ 95%)');
+  }
+
+  // Weight hints
   const weight = parseFloat(document.getElementById('daily-weight').value);
-  if (weight && appState.data.daily.length > 0) {
+  if (isNaN(weight) || !weight) {
+    setHint('hint-weight', '', '');
+  } else if (appState.data.daily.length > 0) {
+    const yesterday = appState.data.daily[0];
+    if (yesterday && yesterday.weight) {
+      const diff = weight - parseFloat(yesterday.weight);
+      if (diff >= 2) {
+        setHint('hint-weight', 'error', '⚠️ +' + diff.toFixed(1) + ' lbs from yesterday — call doctor same day');
+      } else if (diff > 0) {
+        setHint('hint-weight', 'warn', '+' + diff.toFixed(1) + ' lbs from yesterday — monitor');
+      } else if (diff < 0) {
+        setHint('hint-weight', 'ok', diff.toFixed(1) + ' lbs from yesterday');
+      } else {
+        setHint('hint-weight', 'ok', 'Same as yesterday');
+      }
+    } else {
+      setHint('hint-weight', '', '');
+    }
+  } else {
+    setHint('hint-weight', '', '');
+  }
+
+  const alerts = [];
+  if (!isNaN(sys) && !isNaN(dia) && (sys >= 180 || dia >= 120)) alerts.push('⚠️ BP is critically high ('+sys+'/'+dia+'). Call doctor now.');
+  if (!isNaN(sys) && !isNaN(dia) && (sys < 90 || dia < 60)) alerts.push('⚠️ BP is very low ('+sys+'/'+dia+'). Call doctor.');
+  if (!isNaN(hr) && hr > 120) alerts.push('⚠️ Heart rate is high ('+hr+' bpm). Monitor closely.');
+  if (!isNaN(o2) && o2 < 92) alerts.push('⚠️ Oxygen saturation is low ('+o2+'%). Call doctor.');
+  if (chest === 'yes') alerts.push('🚨 Chest pain reported. Consider calling 911 if severe.');
+
+  if (!isNaN(weight) && weight && appState.data.daily.length > 0) {
     const yesterday = appState.data.daily[0];
     if (yesterday && yesterday.weight) {
       const diff = weight - parseFloat(yesterday.weight);
       if (diff >= 2) alerts.push('⚠️ Weight up '+diff.toFixed(1)+' lbs from yesterday. Call doctor if this continues.');
     }
   }
-  
+
   const banner = document.getElementById('daily-alert');
   if (alerts.length > 0) {
     banner.innerHTML = alerts.join('<br/>');
     banner.classList.add('visible');
   } else {
     banner.classList.remove('visible');
+  }
+}
+
+function checkStepsHint() {
+  const steps = parseInt(document.getElementById('weekly-steps').value);
+  if (isNaN(steps) || !steps) {
+    setHint('hint-steps', '', '');
+  } else if (steps >= 5000 && steps <= 7500) {
+    setHint('hint-steps', 'ok', '✓ Within goal (5,000–7,500/day)');
+  } else if (steps > 7500) {
+    setHint('hint-steps', 'ok', '✓ Above goal — great effort!');
+  } else if (steps >= 3000) {
+    setHint('hint-steps', 'warn', 'Below goal — aim for 5,000–7,500/day');
+  } else {
+    setHint('hint-steps', 'warn', 'Low activity — work up gradually toward 5,000+/day');
   }
 }
 
