@@ -636,6 +636,30 @@
       .form-grid { grid-template-columns: 1fr; }
     }
 
+    /* ── SUB-TABS ─────────────────────────────────── */
+    .sub-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--gray-200);
+      margin-bottom: 20px;
+    }
+    .sub-tab {
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-500);
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .sub-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .sub-tab:hover:not(.active) { color: var(--gray-700); }
+    .sub-panel { display: none; }
+    .sub-panel.active { display: block; }
+
     /* ── ALERT BANNER ────────────────────────────── */
     .alert-banner {
       background: var(--red-pale);
@@ -767,6 +791,12 @@
 
       <div id="daily-alert" class="alert-banner"></div>
 
+      <div class="sub-tabs">
+        <button class="sub-tab active" id="subtab-daily-log" onclick="showSubTab('daily','log')">📝 Log</button>
+        <button class="sub-tab" id="subtab-daily-history" onclick="showSubTab('daily','history')">📋 History</button>
+      </div>
+
+      <div class="sub-panel active" id="subpanel-daily-log">
       <div class="card">
         <div class="card-title"><span class="card-icon">📆</span>Today's Entry</div>
 
@@ -889,7 +919,9 @@
           <span class="save-status" id="daily-save-status"></span>
         </div>
       </div>
+      </div>
 
+      <div class="sub-panel" id="subpanel-daily-history">
       <!-- History -->
       <div class="history-section">
         <div class="history-title">Recent Daily Entries</div>
@@ -900,6 +932,7 @@
           </div>
         </div>
       </div>
+      </div>
     </section>
 
     <!-- ── WEEKLY CHECK-IN ────────────────────────────── -->
@@ -909,6 +942,12 @@
         <p>Do this once a week — ideally on the same day each week. This captures bigger-picture health trends.</p>
       </div>
 
+      <div class="sub-tabs">
+        <button class="sub-tab active" id="subtab-weekly-log" onclick="showSubTab('weekly','log')">📝 Log</button>
+        <button class="sub-tab" id="subtab-weekly-history" onclick="showSubTab('weekly','history')">📋 History</button>
+      </div>
+
+      <div class="sub-panel active" id="subpanel-weekly-log">
       <div class="card">
         <div class="card-title"><span class="card-icon">📆</span>This Week's Check-In</div>
         <div class="form-grid-2" style="margin-bottom:20px;">
@@ -1037,7 +1076,9 @@
           <span class="save-status" id="weekly-save-status"></span>
         </div>
       </div>
+      </div>
 
+      <div class="sub-panel" id="subpanel-weekly-history">
       <div class="history-section">
         <div class="history-title">Weekly Check-In History</div>
         <div id="weekly-history">
@@ -1046,6 +1087,7 @@
             <p>No weekly check-ins yet.</p>
           </div>
         </div>
+      </div>
       </div>
     </section>
 
@@ -1056,6 +1098,12 @@
         <p>Track Bill's overall mood, mental well-being, and emotional state. This helps the family and his doctors understand the full picture.</p>
       </div>
 
+      <div class="sub-tabs">
+        <button class="sub-tab active" id="subtab-journal-log" onclick="showSubTab('journal','log')">📝 Log</button>
+        <button class="sub-tab" id="subtab-journal-history" onclick="showSubTab('journal','history')">📋 History</button>
+      </div>
+
+      <div class="sub-panel active" id="subpanel-journal-log">
       <div class="card">
         <div class="card-title"><span class="card-icon">✍️</span>New Journal Entry</div>
         <div class="form-grid-2" style="margin-bottom:20px;">
@@ -1095,7 +1143,9 @@
           <span class="save-status" id="journal-save-status"></span>
         </div>
       </div>
+      </div>
 
+      <div class="sub-panel" id="subpanel-journal-history">
       <div class="history-section">
         <div class="history-title">Journal History</div>
         <div id="journal-history">
@@ -1104,6 +1154,7 @@
             <p>No journal entries yet.</p>
           </div>
         </div>
+      </div>
       </div>
     </section>
 
@@ -1114,6 +1165,12 @@
         <p>Record notes from each appointment. Bring these summaries to help the doctor see patterns over time.</p>
       </div>
 
+      <div class="sub-tabs">
+        <button class="sub-tab active" id="subtab-visits-log" onclick="showSubTab('visits','log')">📝 Log</button>
+        <button class="sub-tab" id="subtab-visits-history" onclick="showSubTab('visits','history')">📋 History</button>
+      </div>
+
+      <div class="sub-panel active" id="subpanel-visits-log">
       <div class="card">
         <div class="card-title"><span class="card-icon">📝</span>Log a Visit</div>
         <div class="form-grid-2" style="margin-bottom:20px;">
@@ -1170,7 +1227,9 @@
           <span class="save-status" id="visit-save-status"></span>
         </div>
       </div>
+      </div>
 
+      <div class="sub-panel" id="subpanel-visits-history">
       <div class="history-section">
         <div class="history-title">Visit History</div>
         <div id="visit-history">
@@ -1179,6 +1238,7 @@
             <p>No visits logged yet.</p>
           </div>
         </div>
+      </div>
       </div>
     </section>
 
@@ -1403,6 +1463,13 @@ function showSection(name) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
+function showSubTab(section, tab) {
+  ['log', 'history'].forEach(t => {
+    document.getElementById(`subtab-${section}-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`subpanel-${section}-${t}`).classList.toggle('active', t === tab);
+  });
+}
+
 // ══════════════════════════════════════════════════════
 //  DATES
 // ══════════════════════════════════════════════════════
@@ -1526,6 +1593,7 @@ function saveDaily() {
   saveToLocalStorage();
   renderDailyHistory();
   showSaveStatus('daily-save-status', '✅ Saved!');
+  showSubTab('daily', 'history');
 }
 
 function saveWeekly() {
@@ -1553,6 +1621,7 @@ function saveWeekly() {
   saveToLocalStorage();
   renderWeeklyHistory();
   showSaveStatus('weekly-save-status', '✅ Saved!');
+  showSubTab('weekly', 'history');
 }
 
 function saveJournal() {
@@ -1579,7 +1648,8 @@ function saveJournal() {
   saveToLocalStorage();
   renderJournalHistory();
   showSaveStatus('journal-save-status', '✅ Saved!');
-  
+  showSubTab('journal', 'history');
+
   // Reset form
   document.getElementById('journal-text').value = '';
   appState.selectedMood = null;
@@ -1607,6 +1677,7 @@ function saveVisit() {
   saveToLocalStorage();
   renderVisitHistory();
   showSaveStatus('visit-save-status', '✅ Saved!');
+  showSubTab('visits', 'history');
 }
 
 function showSaveStatus(id, msg) {
