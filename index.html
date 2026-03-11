@@ -1443,9 +1443,16 @@ function signOut() {
 function setEditMode(isEditor) {
   const inputs = document.querySelectorAll('input, select, textarea');
   inputs.forEach(el => { el.disabled = !isEditor; });
-  
+
   const saveBtns = document.querySelectorAll('.btn-save');
   saveBtns.forEach(btn => { btn.disabled = !isEditor; });
+
+  if (!isEditor) {
+    ['daily', 'weekly', 'journal', 'visits'].forEach(section => {
+      document.getElementById(`subtab-${section}-log`).style.display = 'none';
+      showSubTab(section, 'history');
+    });
+  }
 }
 
 // Allow Enter key on lock screen
