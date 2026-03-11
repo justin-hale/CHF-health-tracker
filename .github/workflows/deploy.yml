@@ -35,6 +35,7 @@ jobs:
         run: |
           mkdir -p _site
           sed "s/__VIEW_PASSWORD_HASH__/$VIEW_PASSWORD_HASH/; s/__EDITOR_TOKEN_HASH__/$EDITOR_TOKEN_HASH/" index.html > _site/index.html
+          cp -r favicon _site/favicon
           # Verify injection worked
           if grep -q '__VIEW_PASSWORD_HASH__' _site/index.html; then echo "ERROR: VIEW_PASSWORD_HASH placeholder was not replaced"; exit 1; fi
           if grep -q '__EDITOR_TOKEN_HASH__' _site/index.html; then echo "ERROR: EDITOR_TOKEN_HASH placeholder was not replaced"; exit 1; fi
