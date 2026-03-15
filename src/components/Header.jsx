@@ -1,4 +1,4 @@
-export default function Header({ isEditor, syncStatus, gistToken, onOpenGistModal, onSync, onSignOut }) {
+export default function Header({ isEditor, syncStatus, gistToken, onOpenGistModal, onSync, onSignOut, onExport }) {
   const syncLabel = syncStatus === 'syncing' ? '⏳ Syncing…' : syncStatus === 'synced' ? '✅ Synced!' : syncStatus === 'error' ? '❌ Sync Failed' : '☁️ Sync'
 
   return (
@@ -19,6 +19,9 @@ export default function Header({ isEditor, syncStatus, gistToken, onOpenGistModa
             <button className="sync-btn" onClick={onSync} disabled={syncStatus === 'syncing'}>
               {syncLabel}
             </button>
+          )}
+          {isEditor && (
+            <button className="sync-btn" style={{ background: 'var(--teal-light)' }} onClick={onExport}>📤 Export</button>
           )}
           <button className="sync-btn" onClick={onSignOut}>🔒 Sign Out</button>
         </div>

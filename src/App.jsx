@@ -6,6 +6,7 @@ import LockScreen from './components/LockScreen.jsx'
 import Header from './components/Header.jsx'
 import Nav from './components/Nav.jsx'
 import GistModal from './components/GistModal.jsx'
+import ExportModal from './components/ExportModal.jsx'
 import DailySection from './components/sections/DailySection.jsx'
 import WeeklySection from './components/sections/WeeklySection.jsx'
 import JournalSection from './components/sections/JournalSection.jsx'
@@ -19,6 +20,7 @@ export default function App() {
   const [gistToken, setGistToken] = useState(null)
   const [activeSection, setActiveSection] = useState('daily')
   const [showGistModal, setShowGistModal] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
   const [syncStatus, setSyncStatus] = useState('idle')
 
   useEffect(() => {
@@ -159,6 +161,7 @@ export default function App() {
         onOpenGistModal={() => setShowGistModal(true)}
         onSync={handleSyncToGist}
         onSignOut={signOut}
+        onExport={() => setShowExportModal(true)}
       />
       <Nav activeSection={activeSection} onSelect={setActiveSection} />
       <main>
@@ -174,6 +177,9 @@ export default function App() {
           onSave={handleSaveGistConfig}
           onClose={() => setShowGistModal(false)}
         />
+      )}
+      {showExportModal && (
+        <ExportModal data={data} onClose={() => setShowExportModal(false)} />
       )}
     </div>
   )

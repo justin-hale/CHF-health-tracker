@@ -2,6 +2,7 @@ import { useState } from 'react'
 import EditingBanner from '../EditingBanner.jsx'
 import { getDailyHints, getDailyAlerts } from '../../utils/alerts.js'
 import { formatDate, getBPFlag, formatSymptoms } from '../../utils/formatters.js'
+import TrendsSection from './TrendsSection.jsx'
 
 function today() {
   const d = new Date()
@@ -100,6 +101,7 @@ export default function DailySection({ entries, isEditor, onSave }) {
           <button className={'sub-tab' + (subTab === 'log' ? ' active' : '')} onClick={() => setSubTab('log')}>📝 Log</button>
         )}
         <button className={'sub-tab' + (subTab === 'history' ? ' active' : '')} onClick={() => setSubTab('history')}>📋 History</button>
+        <button className={'sub-tab' + (subTab === 'trends' ? ' active' : '')} onClick={() => setSubTab('trends')}>📈 Trends</button>
       </div>
 
       {subTab === 'log' && isEditor && (
@@ -305,6 +307,11 @@ export default function DailySection({ entries, isEditor, onSave }) {
               </div>
             )}
           </div>
+        </div>
+      )}
+      {subTab === 'trends' && (
+        <div className="sub-panel active">
+          <TrendsSection entries={entries} />
         </div>
       )}
     </section>
