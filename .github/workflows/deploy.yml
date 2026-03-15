@@ -27,9 +27,6 @@ jobs:
           VITE_VIEW_PASSWORD_HASH: ${{ secrets.VIEW_PASSWORD_HASH }}
           VITE_EDITOR_TOKEN_HASH: ${{ secrets.EDITOR_TOKEN_HASH }}
 
-      - name: Copy favicon to dist
-        run: cp -r favicon dist/
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
