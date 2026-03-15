@@ -45,33 +45,17 @@ export async function loadFromGist(gistId, token, localData) {
     const fileContent = gist.files['bills-health-data.json']?.content
     if (!fileContent) return localData
 
+    // Gist is the source of truth — use it directly.
+    // localStorage is only a fallback for when the gist is unreachable.
     const gistData = JSON.parse(fileContent)
-
-    const merge = (local, remote) => {
-      const map = new Map()
-      ;[...(remote || []), ...(local || [])].forEach(e => map.set(e.id, e))
-      return Array.from(map.values()).sort((a, b) => {
-        const aKey = (a.date || '') + 'T' + (a.time || '00:00')
-        const bKey = (b.date || '') + 'T' + (b.time || '00:00')
-        return bKey > aKey ? 1 : -1
-      })
+    const canonical = {
+      daily:   gistData.daily   || [],
+      weekly:  gistData.weekly  || [],
+      journal: gistData.journal || [],
+      visits:  gistData.visits  || [],
     }
-
-    const mergeOnePerDate = (local, remote) => {
-      const all = merge(local, remote)
-      const dateMap = new Map()
-      all.forEach(e => { if (!dateMap.has(e.date) || e.id > dateMap.get(e.date).id) dateMap.set(e.date, e) })
-      return Array.from(dateMap.values()).sort((a, b) => new Date(b.date) - new Date(a.date))
-    }
-
-    const merged = {
-      daily: merge(localData.daily, gistData.daily),
-      weekly: mergeOnePerDate(localData.weekly, gistData.weekly),
-      journal: merge(localData.journal, gistData.journal),
-      visits: merge(localData.visits, gistData.visits),
-    }
-    saveToLocalStorage(merged)
-    return merged
+    saveToLocalStorage(canonical)
+    return canonical
   } catch (err) {
     console.warn('Could not load from Gist, using localStorage:', err)
     return localData
