@@ -2,48 +2,36 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Compute Password Hashes
-        run: |
-          if [ -z "$VIEW_PASSWORD" ]; then echo "ERROR: VIEW_PASSWORD secret is not set"; exit 1; fi
-          if [ -z "$EDITOR_TOKEN" ]; then echo "ERROR: EDITOR_TOKEN secret is not set"; exit 1; fi
-          VIEW_HASH=$(node -e "const crypto = require('crypto'); console.log(crypto.createHash('sha256').update(process.env.VIEW_PASSWORD).digest('hex'));")
-          EDITOR_HASH=$(node -e "const crypto = require('crypto'); console.log(crypto.createHash('sha256').update(process.env.EDITOR_TOKEN).digest('hex'));")
-          echo "VIEW_PASSWORD_HASH=$VIEW_HASH" >> $GITHUB_ENV
-          echo "EDITOR_TOKEN_HASH=$EDITOR_HASH" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
         env:
-          VIEW_PASSWORD: ${{ secrets.VIEW_PASSWORD }}
-          EDITOR_TOKEN: ${{ secrets.EDITOR_TOKEN }}
+          VITE_VIEW_PASSWORD_HASH: ${{ secrets.VIEW_PASSWORD_HASH }}
+          VITE_EDITOR_TOKEN_HASH: ${{ secrets.EDITOR_TOKEN_HASH }}
 
-      - name: Inject Hashes into HTML
-        run: |
-          mkdir -p _site
-          sed "s/__VIEW_PASSWORD_HASH__/$VIEW_PASSWORD_HASH/; s/__EDITOR_TOKEN_HASH__/$EDITOR_TOKEN_HASH/" index.html > _site/index.html
-          cp -r favicon _site/favicon
-          # Verify injection worked
-          if grep -q '__VIEW_PASSWORD_HASH__' _site/index.html; then echo "ERROR: VIEW_PASSWORD_HASH placeholder was not replaced"; exit 1; fi
-          if grep -q '__EDITOR_TOKEN_HASH__' _site/index.html; then echo "ERROR: EDITOR_TOKEN_HASH placeholder was not replaced"; exit 1; fi
-          echo "Hash injection verified successfully"
+      - name: Copy favicon to dist
+        run: cp -r favicon dist/
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-          cname: bill.hale.fyi
+          publish_dir: ./dist
