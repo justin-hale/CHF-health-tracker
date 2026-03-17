@@ -1,27 +1,28 @@
 const TABS = [
-  { id: 'daily',     icon: 'fa-calendar-day',    label: 'Daily Log' },
-  { id: 'weekly',    icon: 'fa-chart-bar',        label: 'Weekly Check-In' },
-  { id: 'journal',   icon: 'fa-book',             label: 'Journal' },
-  { id: 'visits',    icon: 'fa-hospital',         label: 'Doctor Visits' },
-  { id: 'reference', icon: 'fa-clipboard-list',   label: 'Reference Guide' },
+  { id: 'daily',     icon: 'fa-calendar-day',   label: 'Daily' },
+  { id: 'weekly',    icon: 'fa-chart-bar',       label: 'Weekly' },
+  { id: 'journal',   icon: 'fa-book',            label: 'Journal' },
+  { id: 'visits',    icon: 'fa-hospital',        label: 'Visits' },
+  { id: 'reference', icon: 'fa-clipboard-list',  label: 'Guide' },
 ]
 
 export default function Nav({ activeSection, onSelect }) {
   return (
-    <nav className="bg-white border-b-2 border-gray-200 px-6">
-      <div className="max-w-6xl mx-auto flex gap-1 overflow-x-auto scrollbar-hide">
+    <nav className="bg-white border-b border-gray-200 sticky top-[57px] z-10">
+      <div className="max-w-5xl mx-auto flex">
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => onSelect(tab.id)}
             className={
-              'px-5 py-3.5 border-none bg-transparent font-sans font-bold text-[15px] cursor-pointer border-b-[3px] whitespace-nowrap transition-colors -mb-0.5 ' +
+              'flex-1 flex flex-col items-center gap-1 py-2.5 border-none bg-transparent cursor-pointer border-b-2 -mb-px transition-colors font-sans ' +
               (activeSection === tab.id
                 ? 'text-rose-600 border-rose-600'
-                : 'text-gray-400 border-transparent hover:text-gray-800')
+                : 'text-gray-500 border-transparent hover:text-gray-600')
             }
           >
-            <i className={`fa-solid ${tab.icon} mr-1.5`} />{tab.label}
+            <i className={`fa-solid ${tab.icon} text-base`} />
+            <span className="text-[11px] font-semibold uppercase tracking-wide">{tab.label}</span>
           </button>
         ))}
       </div>

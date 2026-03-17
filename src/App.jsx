@@ -164,7 +164,7 @@ export default function App() {
         onExport={() => setShowExportModal(true)}
       />
       <Nav activeSection={activeSection} onSelect={setActiveSection} />
-      <main className="max-w-6xl mx-auto px-6 pt-8 pb-20">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-20">
         {activeSection === 'daily' && <DailySection entries={data.daily} isEditor={isEditor} onSave={saveDaily} />}
         {activeSection === 'weekly' && <WeeklySection entries={data.weekly} isEditor={isEditor} onSave={saveWeekly} />}
         {activeSection === 'journal' && <JournalSection entries={data.journal} isEditor={isEditor} onSave={saveJournal} />}

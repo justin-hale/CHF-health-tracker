@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const inputCls = 'w-full px-3.5 py-3 border-2 border-gray-200 rounded-xl font-sans text-base text-gray-800 bg-stone-50 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/10'
+const inputCls = 'w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 bg-white outline-none transition focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20'
 
 export default function GistModal({ currentToken, onSave, onClose }) {
   const [token, setToken] = useState(currentToken || '')
@@ -15,18 +15,18 @@ export default function GistModal({ currentToken, onSave, onClose }) {
       className="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center p-6"
       onClick={e => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl p-9 max-w-lg w-full shadow-2xl">
-        <h2 className="font-serif text-2xl text-gray-800 mb-2">
-          <i className="fa-solid fa-gear mr-2 text-teal-600" />Enable Cloud Sync
+      <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl border border-gray-100">
+        <h2 className="font-semibold text-gray-900 text-base mb-1">
+          <i className="fa-solid fa-gear mr-1.5 text-teal-600 text-sm" />Enable Cloud Sync
         </h2>
-        <p className="text-gray-600 text-sm leading-relaxed mb-5">
-          Enter your GitHub Personal Access Token to enable saving data to the cloud. This is stored only on this device and never sent anywhere except GitHub.
+        <p className="text-gray-600 text-xs leading-relaxed mb-4">
+          Enter your GitHub Personal Access Token. Stored only on this device and sent only to GitHub.
         </p>
-        <div className="flex flex-col gap-1.5 mb-4">
-          <label className="text-xs font-extrabold uppercase tracking-[0.4px] text-gray-600">GitHub Personal Access Token</label>
-          <span className="text-xs text-gray-400 font-semibold">
-            Needs <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">gist</code> scope only —{' '}
-            <a href="https://github.com/settings/tokens/new" target="_blank" rel="noreferrer" className="text-teal-600 font-bold">create one here</a>
+        <div className="flex flex-col gap-1 mb-4">
+          <label className="text-xs font-semibold text-gray-600">GitHub Personal Access Token</label>
+          <span className="text-[11px] text-gray-500 mb-1">
+            Needs <code className="bg-gray-100 px-1 rounded text-[11px]">gist</code> scope —{' '}
+            <a href="https://github.com/settings/tokens/new" target="_blank" rel="noreferrer" className="text-teal-600 font-semibold">create one here</a>
           </span>
           <input
             type="password"
@@ -36,15 +36,15 @@ export default function GistModal({ currentToken, onSave, onClose }) {
             className={inputCls}
           />
         </div>
-        <div className="flex gap-3 mt-6">
+        <div className="flex gap-2 mt-4">
           <button
-            className="px-8 py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-sans text-[17px] font-extrabold transition active:scale-[0.98] cursor-pointer"
+            className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-md font-sans text-sm font-semibold transition cursor-pointer"
             onClick={handleSave}
           >
-            <i className="fa-solid fa-floppy-disk mr-2" />Save
+            <i className="fa-solid fa-floppy-disk mr-1.5" />Save
           </button>
           <button
-            className="px-6 py-3 bg-gray-100 text-gray-600 border-none rounded-xl font-sans text-[15px] font-bold cursor-pointer hover:bg-gray-200 transition"
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md font-sans text-sm font-semibold transition cursor-pointer"
             onClick={onClose}
           >
             Cancel
