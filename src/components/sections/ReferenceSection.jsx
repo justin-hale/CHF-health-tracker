@@ -1,66 +1,86 @@
 export default function ReferenceSection() {
   return (
-    <section className="section active">
-      <div className="section-header">
-        <h2>📋 Reference Guide</h2>
-        <p>Quick-reference targets and warning signs for Bill's CHF management. Based on his medical records and standard CHF guidelines.</p>
+    <section>
+      <div className="mb-7">
+        <h2 className="font-serif text-3xl text-gray-800 mb-1.5">
+          <i className="fa-solid fa-clipboard-list mr-2 text-rose-500" />Reference Guide
+        </h2>
+        <p className="text-gray-600 text-sm leading-relaxed">Quick-reference targets and warning signs for Bill's CHF management. Based on his medical records and standard CHF guidelines.</p>
       </div>
 
-      <div className="card">
-        <div className="card-title"><span className="card-icon">🚨</span>Emergency — Call 911 Immediately</div>
-        <div style={{ background: 'var(--red-pale)', borderRadius: 'var(--radius-sm)', padding: 20, border: '2px solid #f0a090' }}>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <li style={{ fontSize: 16, fontWeight: 700, color: 'var(--rust-dark)' }}>🫁 Sudden severe shortness of breath, especially at rest</li>
-            <li style={{ fontSize: 16, fontWeight: 700, color: 'var(--rust-dark)' }}>💗 Chest pain or pressure</li>
-            <li style={{ fontSize: 16, fontWeight: 700, color: 'var(--rust-dark)' }}>😵 Fainting or loss of consciousness</li>
-            <li style={{ fontSize: 16, fontWeight: 700, color: 'var(--rust-dark)' }}>🗣️ Sudden confusion or inability to speak clearly</li>
-            <li style={{ fontSize: 16, fontWeight: 700, color: 'var(--rust-dark)' }}>💓 Heart racing uncontrollably or "flopping" sensation</li>
-            <li style={{ fontSize: 16, fontWeight: 700, color: 'var(--rust-dark)' }}>🔵 Lips or fingertips turning blue</li>
+      <div className="bg-white rounded-2xl p-7 shadow-sm mb-5">
+        <div className="text-lg font-extrabold text-gray-800 mb-5 flex items-center gap-2">
+          <i className="fa-solid fa-triangle-exclamation text-rose-600" />Emergency — Call 911 Immediately
+        </div>
+        <div className="bg-red-50 rounded-xl p-5 border-2 border-red-200">
+          <ul className="flex flex-col gap-2.5 list-none">
+            <li className="text-base font-bold text-rose-800"><i className="fa-solid fa-lungs mr-2" />Sudden severe shortness of breath, especially at rest</li>
+            <li className="text-base font-bold text-rose-800"><i className="fa-solid fa-heart-pulse mr-2" />Chest pain or pressure</li>
+            <li className="text-base font-bold text-rose-800"><i className="fa-solid fa-face-dizzy mr-2" />Fainting or loss of consciousness</li>
+            <li className="text-base font-bold text-rose-800"><i className="fa-solid fa-comment mr-2" />Sudden confusion or inability to speak clearly</li>
+            <li className="text-base font-bold text-rose-800"><i className="fa-solid fa-heart mr-2" />Heart racing uncontrollably or "flopping" sensation</li>
+            <li className="text-base font-bold text-rose-800"><i className="fa-solid fa-circle mr-2 text-blue-600" />Lips or fingertips turning blue</li>
           </ul>
         </div>
       </div>
 
-      <div className="card">
-        <div className="card-title"><span className="card-icon">📞</span>Call Doctor Same Day (Not Emergency)</div>
-        <div style={{ background: 'var(--amber-light)', borderRadius: 'var(--radius-sm)', padding: 20, border: '2px solid #f0c85a' }}>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <li style={{ fontSize: 15, fontWeight: 700, color: '#7a5010' }}>⚖️ Weight gain of 2+ lbs in one day</li>
-            <li style={{ fontSize: 15, fontWeight: 700, color: '#7a5010' }}>⚖️ Weight gain of 5+ lbs in one week</li>
-            <li style={{ fontSize: 15, fontWeight: 700, color: '#7a5010' }}>🦵 Sudden increase in leg or ankle swelling</li>
-            <li style={{ fontSize: 15, fontWeight: 700, color: '#7a5010' }}>😮‍💨 Shortness of breath that is worse than usual</li>
-            <li style={{ fontSize: 15, fontWeight: 700, color: '#7a5010' }}>🩺 BP above 180/120 or below 90/60</li>
-            <li style={{ fontSize: 15, fontWeight: 700, color: '#7a5010' }}>💗 Heart rate above 120 bpm at rest</li>
+      <div className="bg-white rounded-2xl p-7 shadow-sm mb-5">
+        <div className="text-lg font-extrabold text-gray-800 mb-5 flex items-center gap-2">
+          <i className="fa-solid fa-phone text-amber-500" />Call Doctor Same Day (Not Emergency)
+        </div>
+        <div className="bg-amber-50 rounded-xl p-5 border-2 border-amber-200">
+          <ul className="flex flex-col gap-2.5 list-none">
+            <li className="text-[15px] font-bold text-amber-800"><i className="fa-solid fa-scale-balanced mr-2" />Weight gain of 2+ lbs in one day</li>
+            <li className="text-[15px] font-bold text-amber-800"><i className="fa-solid fa-scale-balanced mr-2" />Weight gain of 5+ lbs in one week</li>
+            <li className="text-[15px] font-bold text-amber-800"><i className="fa-solid fa-person mr-2" />Sudden increase in leg or ankle swelling</li>
+            <li className="text-[15px] font-bold text-amber-800"><i className="fa-solid fa-lungs mr-2" />Shortness of breath that is worse than usual</li>
+            <li className="text-[15px] font-bold text-amber-800"><i className="fa-solid fa-stethoscope mr-2" />BP above 180/120 or below 90/60</li>
+            <li className="text-[15px] font-bold text-amber-800"><i className="fa-solid fa-heart-pulse mr-2" />Heart rate above 120 bpm at rest</li>
           </ul>
         </div>
       </div>
 
-      <div className="card">
-        <div className="card-title"><span className="card-icon">🎯</span>Daily Target Ranges</div>
-        <div className="reference-grid">
-          <div className="reference-item"><div className="ref-label">Blood Pressure</div><div className="ref-range">&lt; 130/80 mmHg</div><div className="ref-note">Below 120/80 is ideal</div></div>
-          <div className="reference-item"><div className="ref-label">Resting Heart Rate</div><div className="ref-range">60–100 bpm</div><div className="ref-note">50–70 is ideal for CHF</div></div>
-          <div className="reference-item"><div className="ref-label">Oxygen Saturation</div><div className="ref-range">≥ 95%</div><div className="ref-note">Below 92% — call doctor</div></div>
-          <div className="reference-item warn"><div className="ref-label">Sodium Intake</div><div className="ref-range">&lt; 2,000 mg/day</div><div className="ref-note">Critical for CHF</div></div>
-          <div className="reference-item warn"><div className="ref-label">Fluid Intake</div><div className="ref-range">1.5–2 L/day</div><div className="ref-note">Ask doctor for exact limit</div></div>
-          <div className="reference-item"><div className="ref-label">Current Weight</div><div className="ref-range">~244 lbs</div><div className="ref-note">Goal: gradual, safe reduction</div></div>
+      <div className="bg-white rounded-2xl p-7 shadow-sm mb-5">
+        <div className="text-lg font-extrabold text-gray-800 mb-5 flex items-center gap-2">
+          <i className="fa-solid fa-bullseye text-teal-600" />Daily Target Ranges
+        </div>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
+          {[
+            { label: 'Blood Pressure', range: '< 130/80 mmHg', note: 'Below 120/80 is ideal', warn: false },
+            { label: 'Resting Heart Rate', range: '60–100 bpm', note: '50–70 is ideal for CHF', warn: false },
+            { label: 'Oxygen Saturation', range: '≥ 95%', note: 'Below 92% — call doctor', warn: false },
+            { label: 'Sodium Intake', range: '< 2,000 mg/day', note: 'Critical for CHF', warn: true },
+            { label: 'Fluid Intake', range: '1.5–2 L/day', note: 'Ask doctor for exact limit', warn: true },
+            { label: 'Current Weight', range: '~244 lbs', note: 'Goal: gradual, safe reduction', warn: false },
+          ].map(item => (
+            <div key={item.label} className={`bg-gray-100 rounded-xl px-4 py-3.5 border-l-4 ${item.warn ? 'border-l-amber-500' : 'border-l-teal-600'}`}>
+              <div className="text-xs font-extrabold uppercase tracking-[0.4px] text-gray-600 mb-1">{item.label}</div>
+              <div className={`text-base font-bold ${item.warn ? 'text-amber-500' : 'text-teal-600'}`}>{item.range}</div>
+              <div className="text-xs text-gray-400 mt-0.5">{item.note}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="card">
-        <div className="card-title"><span className="card-icon">💊</span>About Bill's CHF</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--gray-600)' }}>Bill has <strong>congestive heart failure (CHF)</strong>, which means his heart muscle doesn't pump blood as efficiently as it should. This causes fluid to build up in the lungs and body. It is a manageable condition — with consistent daily monitoring and lifestyle choices, CHF patients can maintain a good quality of life.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--gray-600)' }}>His most recent NT-proBNP (heart strain marker) was <strong>66 pg/mL</strong> (well within normal range), and his blood pressure has improved to <strong>136/72</strong> (Feb 2026). These are encouraging signs that his CHF is currently <em>compensated</em> — meaning his heart is managing reasonably well.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--gray-600)' }}>The three most impactful daily habits are: <strong>weighing himself every morning</strong> (fluid changes happen fast), <strong>keeping sodium below 2,000mg</strong>, and <strong>taking all medications on schedule</strong>.</p>
+      <div className="bg-white rounded-2xl p-7 shadow-sm mb-5">
+        <div className="text-lg font-extrabold text-gray-800 mb-5 flex items-center gap-2">
+          <i className="fa-solid fa-pills text-teal-600" />About Bill's CHF
+        </div>
+        <div className="flex flex-col gap-3">
+          <p className="text-[15px] leading-[1.7] text-gray-600">Bill has <strong>congestive heart failure (CHF)</strong>, which means his heart muscle doesn't pump blood as efficiently as it should. This causes fluid to build up in the lungs and body. It is a manageable condition — with consistent daily monitoring and lifestyle choices, CHF patients can maintain a good quality of life.</p>
+          <p className="text-[15px] leading-[1.7] text-gray-600">His most recent NT-proBNP (heart strain marker) was <strong>66 pg/mL</strong> (well within normal range), and his blood pressure has improved to <strong>136/72</strong> (Feb 2026). These are encouraging signs that his CHF is currently <em>compensated</em> — meaning his heart is managing reasonably well.</p>
+          <p className="text-[15px] leading-[1.7] text-gray-600">The three most impactful daily habits are: <strong>weighing himself every morning</strong> (fluid changes happen fast), <strong>keeping sodium below 2,000mg</strong>, and <strong>taking all medications on schedule</strong>.</p>
         </div>
       </div>
 
-      <div className="card">
-        <div className="card-title"><span className="card-icon">🍽️</span>Diet Quick Guide</div>
-        <div className="form-grid-2">
-          <div style={{ background: 'var(--green-pale)', borderRadius: 'var(--radius-sm)', padding: 16 }}>
-            <div style={{ fontWeight: 800, color: 'var(--green)', marginBottom: 10 }}>✅ Good Choices</div>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6, fontSize: 14, color: 'var(--gray-700)' }}>
+      <div className="bg-white rounded-2xl p-7 shadow-sm mb-5">
+        <div className="text-lg font-extrabold text-gray-800 mb-5 flex items-center gap-2">
+          <i className="fa-solid fa-utensils text-teal-600" />Diet Quick Guide
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-green-50 rounded-xl p-4">
+            <div className="font-extrabold text-green-600 mb-2.5"><i className="fa-solid fa-circle-check mr-2" />Good Choices</div>
+            <ul className="flex flex-col gap-1.5 text-sm text-gray-700 list-none">
               <li>🥦 Fresh or frozen vegetables (no added salt)</li>
               <li>🐔 Lean proteins: chicken, fish, turkey</li>
               <li>🍎 Fresh fruit</li>
@@ -69,9 +89,9 @@ export default function ReferenceSection() {
               <li>🌿 Herbs and spices for flavor instead of salt</li>
             </ul>
           </div>
-          <div style={{ background: 'var(--red-pale)', borderRadius: 'var(--radius-sm)', padding: 16 }}>
-            <div style={{ fontWeight: 800, color: 'var(--rust)', marginBottom: 10 }}>❌ Limit or Avoid</div>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6, fontSize: 14, color: 'var(--gray-700)' }}>
+          <div className="bg-red-50 rounded-xl p-4">
+            <div className="font-extrabold text-rose-600 mb-2.5"><i className="fa-solid fa-circle-xmark mr-2" />Limit or Avoid</div>
+            <ul className="flex flex-col gap-1.5 text-sm text-gray-700 list-none">
               <li>🧂 Table salt and salty condiments</li>
               <li>🥫 Canned soups, processed meats</li>
               <li>🍟 Fast food (extremely high sodium)</li>

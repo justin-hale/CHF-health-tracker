@@ -20,8 +20,8 @@ function shortDate(dateStr) {
 const CustomTooltipDate = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: 'white', border: '1px solid #e8e0d8', borderRadius: 8, padding: '8px 12px', fontSize: 13 }}>
-      <div style={{ fontWeight: 700, marginBottom: 4 }}>{label}</div>
+    <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-[13px]">
+      <div className="font-bold mb-1">{label}</div>
       {payload.map(p => (
         <div key={p.dataKey} style={{ color: p.color }}>
           {p.name}: <strong>{p.value ?? '—'}{p.unit || ''}</strong>
@@ -50,7 +50,6 @@ export default function TrendsSection({ entries }) {
       }))
   }, [entries, range])
 
-  // Baseline weight = earliest weight reading in the range
   const baselineWeight = useMemo(() => {
     const weights = chartData.map(d => d.weight).filter(w => w != null)
     return weights.length ? weights[0] : null
@@ -58,9 +57,9 @@ export default function TrendsSection({ entries }) {
 
   if (entries.length < 2) {
     return (
-      <div className="empty-state" style={{ padding: '60px 24px' }}>
-        <div className="empty-icon">📈</div>
-        <p>At least 2 daily entries are needed to show trends.</p>
+      <div className="text-center py-16 px-6 text-gray-400">
+        <i className="fa-solid fa-chart-line text-5xl mb-3 block" />
+        <p className="text-base">At least 2 daily entries are needed to show trends.</p>
       </div>
     )
   }
@@ -69,137 +68,104 @@ export default function TrendsSection({ entries }) {
     margin: { top: 8, right: 16, left: 0, bottom: 0 },
   }
 
+  const cardCls = 'bg-white rounded-2xl p-7 shadow-sm mb-5'
+  const cardTitleCls = 'text-lg font-extrabold text-gray-800 mb-1 flex items-center gap-2'
+
   return (
     <div>
-      {/* Range selector */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+      <div className="flex gap-2 mb-6 flex-wrap">
         {RANGE_OPTIONS.map(opt => (
           <button
             key={opt.value}
             onClick={() => setRange(opt.value)}
-            style={{
-              padding: '6px 16px',
-              borderRadius: 20,
-              border: '2px solid',
-              borderColor: range === opt.value ? 'var(--teal)' : 'var(--gray-200)',
-              background: range === opt.value ? 'var(--teal)' : 'white',
-              color: range === opt.value ? 'white' : 'var(--gray-600)',
-              fontFamily: 'Nunito, sans-serif',
-              fontWeight: 700,
-              fontSize: 13,
-              cursor: 'pointer',
-            }}
+            className={`px-4 py-1.5 rounded-full border-2 font-sans font-bold text-[13px] cursor-pointer transition ${
+              range === opt.value
+                ? 'border-teal-600 bg-teal-600 text-white'
+                : 'border-gray-200 bg-white text-gray-600 hover:border-teal-600'
+            }`}
           >
             {opt.label}
           </button>
         ))}
-        <span style={{ fontSize: 13, color: 'var(--gray-400)', alignSelf: 'center', marginLeft: 4 }}>
-          {chartData.length} readings
-        </span>
+        <span className="text-[13px] text-gray-400 self-center ml-1">{chartData.length} readings</span>
       </div>
 
-      {/* Weight chart */}
-      <div className="card" style={{ marginBottom: 20 }}>
-        <div className="card-title" style={{ marginBottom: 4 }}>
-          <span className="card-icon">⚖️</span>Weight
-          <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--gray-400)', marginLeft: 8 }}>
-            Daily morning weight — fluid retention warning: +2 lbs/day
-          </span>
+      <div className={cardCls}>
+        <div className={cardTitleCls}>
+          <i className="fa-solid fa-scale-balanced text-teal-600" />Weight
+          <span className="text-xs font-normal text-gray-400 ml-2">Daily morning weight — fluid retention warning: +2 lbs/day</span>
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={chartData} {...chartProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0ebe5" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
             <XAxis dataKey="label" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
-            <YAxis
-              domain={['auto', 'auto']}
-              tick={{ fontSize: 11 }}
-              tickFormatter={v => v + ' lbs'}
-              width={64}
-            />
+            <YAxis domain={['auto', 'auto']} tick={{ fontSize: 11 }} tickFormatter={v => v + ' lbs'} width={64} />
             <Tooltip content={<CustomTooltipDate />} />
             {baselineWeight && (
-              <ReferenceLine y={baselineWeight + 2} stroke="#e89c30" strokeDasharray="4 3" label={{ value: '+2 lbs', position: 'right', fontSize: 10, fill: '#e89c30' }} />
+              <ReferenceLine y={baselineWeight + 2} stroke="#f59e0b" strokeDasharray="4 3" label={{ value: '+2 lbs', position: 'right', fontSize: 10, fill: '#f59e0b' }} />
             )}
             {baselineWeight && (
-              <ReferenceLine y={baselineWeight + 5} stroke="#c8553d" strokeDasharray="4 3" label={{ value: '+5 lbs', position: 'right', fontSize: 10, fill: '#c8553d' }} />
+              <ReferenceLine y={baselineWeight + 5} stroke="#e11d48" strokeDasharray="4 3" label={{ value: '+5 lbs', position: 'right', fontSize: 10, fill: '#e11d48' }} />
             )}
-            <Line
-              type="monotone"
-              dataKey="weight"
-              name="Weight"
-              unit=" lbs"
-              stroke="#2a7c8a"
-              strokeWidth={2}
-              dot={{ r: 3, fill: '#2a7c8a' }}
-              connectNulls
-            />
+            <Line type="monotone" dataKey="weight" name="Weight" unit=" lbs" stroke="#0d9488" strokeWidth={2} dot={{ r: 3, fill: '#0d9488' }} connectNulls />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Blood pressure chart */}
-      <div className="card" style={{ marginBottom: 20 }}>
-        <div className="card-title" style={{ marginBottom: 4 }}>
-          <span className="card-icon">❤️</span>Blood Pressure
-          <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--gray-400)', marginLeft: 8 }}>
-            Target: &lt;130/80 mmHg
-          </span>
+      <div className={cardCls}>
+        <div className={cardTitleCls}>
+          <i className="fa-solid fa-heart text-rose-500" />Blood Pressure
+          <span className="text-xs font-normal text-gray-400 ml-2">Target: &lt;130/80 mmHg</span>
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={chartData} {...chartProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0ebe5" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
             <XAxis dataKey="label" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
             <YAxis domain={[40, 'auto']} tick={{ fontSize: 11 }} tickFormatter={v => v} width={36} />
             <Tooltip content={<CustomTooltipDate />} />
-            <ReferenceLine y={180} stroke="#c8553d" strokeDasharray="4 3" label={{ value: '180 alert', position: 'right', fontSize: 10, fill: '#c8553d' }} />
-            <ReferenceLine y={130} stroke="#e89c30" strokeDasharray="4 3" label={{ value: '130 target', position: 'right', fontSize: 10, fill: '#e89c30' }} />
-            <ReferenceLine y={80} stroke="#e89c30" strokeDasharray="4 3" label={{ value: '80 target', position: 'right', fontSize: 10, fill: '#e89c30' }} />
-            <Line type="monotone" dataKey="bpSys" name="Systolic" unit=" mmHg" stroke="#c8553d" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-            <Line type="monotone" dataKey="bpDia" name="Diastolic" unit=" mmHg" stroke="#e89c30" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+            <ReferenceLine y={180} stroke="#e11d48" strokeDasharray="4 3" label={{ value: '180 alert', position: 'right', fontSize: 10, fill: '#e11d48' }} />
+            <ReferenceLine y={130} stroke="#f59e0b" strokeDasharray="4 3" label={{ value: '130 target', position: 'right', fontSize: 10, fill: '#f59e0b' }} />
+            <ReferenceLine y={80} stroke="#f59e0b" strokeDasharray="4 3" label={{ value: '80 target', position: 'right', fontSize: 10, fill: '#f59e0b' }} />
+            <Line type="monotone" dataKey="bpSys" name="Systolic" unit=" mmHg" stroke="#e11d48" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+            <Line type="monotone" dataKey="bpDia" name="Diastolic" unit=" mmHg" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} connectNulls />
             <Legend wrapperStyle={{ fontSize: 12 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Heart rate chart */}
-      <div className="card" style={{ marginBottom: 20 }}>
-        <div className="card-title" style={{ marginBottom: 4 }}>
-          <span className="card-icon">💓</span>Heart Rate
-          <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--gray-400)', marginLeft: 8 }}>
-            Target: 60–100 bpm (50–70 ideal for CHF)
-          </span>
+      <div className={cardCls}>
+        <div className={cardTitleCls}>
+          <i className="fa-solid fa-heart-pulse text-rose-500" />Heart Rate
+          <span className="text-xs font-normal text-gray-400 ml-2">Target: 60–100 bpm (50–70 ideal for CHF)</span>
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={chartData} {...chartProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0ebe5" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
             <XAxis dataKey="label" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
             <YAxis domain={[40, 'auto']} tick={{ fontSize: 11 }} tickFormatter={v => v + ' bpm'} width={56} />
             <Tooltip content={<CustomTooltipDate />} />
-            <ReferenceLine y={120} stroke="#c8553d" strokeDasharray="4 3" label={{ value: '120 alert', position: 'right', fontSize: 10, fill: '#c8553d' }} />
-            <ReferenceLine y={100} stroke="#e89c30" strokeDasharray="4 3" label={{ value: '100 target', position: 'right', fontSize: 10, fill: '#e89c30' }} />
-            <ReferenceLine y={60} stroke="#4a9060" strokeDasharray="4 3" label={{ value: '60 target', position: 'right', fontSize: 10, fill: '#4a9060' }} />
-            <Line type="monotone" dataKey="hr" name="Heart Rate" unit=" bpm" stroke="#c8553d" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+            <ReferenceLine y={120} stroke="#e11d48" strokeDasharray="4 3" label={{ value: '120 alert', position: 'right', fontSize: 10, fill: '#e11d48' }} />
+            <ReferenceLine y={100} stroke="#f59e0b" strokeDasharray="4 3" label={{ value: '100 target', position: 'right', fontSize: 10, fill: '#f59e0b' }} />
+            <ReferenceLine y={60} stroke="#16a34a" strokeDasharray="4 3" label={{ value: '60 target', position: 'right', fontSize: 10, fill: '#16a34a' }} />
+            <Line type="monotone" dataKey="hr" name="Heart Rate" unit=" bpm" stroke="#e11d48" strokeWidth={2} dot={{ r: 3 }} connectNulls />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* O2 saturation chart */}
-      <div className="card" style={{ marginBottom: 20 }}>
-        <div className="card-title" style={{ marginBottom: 4 }}>
-          <span className="card-icon">🫁</span>Oxygen Saturation
-          <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--gray-400)', marginLeft: 8 }}>
-            Target: ≥95% — below 92% requires immediate attention
-          </span>
+      <div className={cardCls}>
+        <div className={cardTitleCls}>
+          <i className="fa-solid fa-lungs text-teal-600" />Oxygen Saturation
+          <span className="text-xs font-normal text-gray-400 ml-2">Target: ≥95% — below 92% requires immediate attention</span>
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={chartData} {...chartProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0ebe5" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
             <XAxis dataKey="label" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
             <YAxis domain={[85, 100]} tick={{ fontSize: 11 }} tickFormatter={v => v + '%'} width={44} />
             <Tooltip content={<CustomTooltipDate />} />
-            <ReferenceLine y={92} stroke="#c8553d" strokeDasharray="4 3" label={{ value: '92% alert', position: 'right', fontSize: 10, fill: '#c8553d' }} />
-            <ReferenceLine y={95} stroke="#e89c30" strokeDasharray="4 3" label={{ value: '95% target', position: 'right', fontSize: 10, fill: '#e89c30' }} />
-            <Line type="monotone" dataKey="o2" name="O₂ Sat" unit="%" stroke="#2a7c8a" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+            <ReferenceLine y={92} stroke="#e11d48" strokeDasharray="4 3" label={{ value: '92% alert', position: 'right', fontSize: 10, fill: '#e11d48' }} />
+            <ReferenceLine y={95} stroke="#f59e0b" strokeDasharray="4 3" label={{ value: '95% target', position: 'right', fontSize: 10, fill: '#f59e0b' }} />
+            <Line type="monotone" dataKey="o2" name="O₂ Sat" unit="%" stroke="#0d9488" strokeWidth={2} dot={{ r: 3 }} connectNulls />
           </LineChart>
         </ResponsiveContainer>
       </div>
