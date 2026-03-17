@@ -86,9 +86,8 @@ export default function VisitsSection({ entries, isEditor, onSave }) {
 
           <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm mb-3">
             <div className={subHead}><i className="fa-solid fa-calendar text-blue-400" />Visit Details</div>
-            <div className="flex flex-col gap-3">
-              <div><label className={lbl}>Date of Visit</label><input type="date" value={form.date} onChange={e => set('date', e.target.value)} className={inp} /></div>
-              <div><label className={lbl}>Doctor / Provider</label><input type="text" value={form.doctor} onChange={e => set('doctor', e.target.value)} placeholder="e.g. Dr. Smith — Cardiology" className={inp} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className={lbl}>Doctor / Provider</label><input type="text" value={form.doctor} onChange={e => set('doctor', e.target.value)} placeholder="e.g. Dr. Smith" className={inp} /></div>
               <div>
                 <label className={lbl}>Type of Visit</label>
                 <select value={form.type} onChange={e => set('type', e.target.value)} className={inp}>
@@ -100,6 +99,7 @@ export default function VisitsSection({ entries, isEditor, onSave }) {
                   <option value="other">Other</option>
                 </select>
               </div>
+              <div><label className={lbl}>Date of Visit</label><input type="date" value={form.date} onChange={e => set('date', e.target.value)} className={inp} /></div>
               <div><label className={lbl}>Next Appointment</label><input type="date" value={form.nextDate} onChange={e => set('nextDate', e.target.value)} className={inp} /></div>
             </div>
           </div>

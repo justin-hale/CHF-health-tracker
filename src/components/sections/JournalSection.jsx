@@ -7,11 +7,18 @@ function today() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-const MOOD_EMOJI = ['', '😞', '😔', '😐', '🙂', '😄']
+const MOOD_ICON = ['', 'fa-face-sad-tear', 'fa-face-frown', 'fa-face-meh', 'fa-face-smile', 'fa-face-grin-wide']
 const MOOD_LABEL = ['', 'Very Low', 'Low', 'Okay', 'Good', 'Great']
+const MOOD_STYLE = [
+  null,
+  { iconCls: 'text-rose-500',  selCls: 'bg-rose-50 border-rose-400 ring-1 ring-rose-400/30',   borderCls: 'border-l-rose-500'  },
+  { iconCls: 'text-amber-500', selCls: 'bg-amber-50 border-amber-400 ring-1 ring-amber-400/30', borderCls: 'border-l-amber-500' },
+  { iconCls: 'text-yellow-500',selCls: 'bg-yellow-50 border-yellow-400 ring-1 ring-yellow-400/30', borderCls: 'border-l-yellow-500' },
+  { iconCls: 'text-lime-500',  selCls: 'bg-lime-50 border-lime-400 ring-1 ring-lime-400/30',   borderCls: 'border-l-lime-500'  },
+  { iconCls: 'text-green-500', selCls: 'bg-green-50 border-green-400 ring-1 ring-green-400/30', borderCls: 'border-l-green-500' },
+]
 const TOPIC_LABELS = { acceptance: 'Accepting diagnosis', family: 'Family connection', activity: 'Activity / getting out', diet: 'Diet discussion', meds: 'Medication conversation', anxiety: 'Anxiety / worry' }
 const EMPTY_TOPICS = { acceptance: false, family: false, activity: false, diet: false, meds: false, anxiety: false }
-const moodBorder = { 1: 'border-l-rose-500', 2: 'border-l-amber-400', 3: 'border-l-amber-400', 4: 'border-l-green-500', 5: 'border-l-green-600' }
 
 const inp = 'w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 bg-white outline-none transition focus:border-teal-600 focus:ring-1 focus:ring-teal-600/20'
 const lbl = 'block text-xs font-semibold text-gray-600 mb-1'
@@ -98,15 +105,16 @@ export default function JournalSection({ entries, isEditor, onSave }) {
               </div>
               <div>
                 <label className={lbl}>Overall Mood</label>
-                <div className="flex gap-1.5 mt-1">
+                <div className="flex gap-2 mt-1">
                   {[1, 2, 3, 4, 5].map(val => (
                     <button
                       key={val}
-                      className={`w-10 h-10 border rounded-md text-lg bg-white cursor-pointer transition hover:scale-105 ${mood === val ? 'border-teal-500 bg-teal-50 ring-1 ring-teal-500/30' : 'border-gray-200'}`}
+                      className={`flex-1 flex flex-col items-center gap-1 py-2 border rounded-md bg-white cursor-pointer transition hover:scale-105 ${mood === val ? MOOD_STYLE[val].selCls : 'border-gray-200'}`}
                       onClick={() => setMood(val)}
                       title={MOOD_LABEL[val]}
                     >
-                      {MOOD_EMOJI[val]}
+                      <i className={`fa-regular ${MOOD_ICON[val]} text-lg ${MOOD_STYLE[val].iconCls}`} />
+                      <span className={`text-[10px] font-semibold ${mood === val ? MOOD_STYLE[val].iconCls : 'text-gray-500'}`}>{MOOD_LABEL[val]}</span>
                     </button>
                   ))}
                 </div>
@@ -127,10 +135,10 @@ export default function JournalSection({ entries, isEditor, onSave }) {
 
           <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm mb-3">
             <div className={subHead}><i className="fa-solid fa-tags text-teal-400" />Topics Covered</div>
-            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            <div className="grid grid-cols-2 gap-2">
               {Object.entries(TOPIC_LABELS).map(([key, label]) => (
-                <label key={key} className="flex items-center gap-1.5 text-xs font-medium text-gray-700 cursor-pointer">
-                  <input type="checkbox" checked={topics[key]} onChange={() => toggleTopic(key)} className="accent-teal-600" /> {label}
+                <label key={key} className={`flex items-center gap-2 px-3 py-2.5 rounded-md border cursor-pointer text-xs font-medium transition ${topics[key] ? 'bg-teal-50 border-teal-400 text-teal-700' : 'bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300'}`}>
+                  <input type="checkbox" checked={topics[key]} onChange={() => toggleTopic(key)} className="accent-teal-600 shrink-0" /> {label}
                 </label>
               ))}
             </div>
@@ -149,10 +157,10 @@ export default function JournalSection({ entries, isEditor, onSave }) {
           {entries.length === 0 ? (
             <div className="text-center py-12 text-gray-500"><i className="fa-solid fa-book text-3xl mb-2 block" /><p className="text-sm">No journal entries yet.</p></div>
           ) : entries.map(e => (
-            <div key={e.id} className={`bg-white rounded-lg border border-gray-100 p-4 shadow-sm mb-3 border-l-4 ${moodBorder[e.mood || 3] || 'border-l-teal-500'}`}>
+            <div key={e.id} className={`bg-white rounded-lg border border-gray-100 p-4 shadow-sm mb-3 border-l-4 ${MOOD_STYLE[e.mood]?.borderCls || 'border-l-gray-300'}`}>
               <div className="flex justify-between items-start flex-wrap gap-2 mb-3">
                 <div className="flex items-center gap-2">
-                  {e.mood && <span className="text-base">{MOOD_EMOJI[e.mood]}</span>}
+                  {e.mood && <i className={`fa-regular ${MOOD_ICON[e.mood]} text-lg ${MOOD_STYLE[e.mood]?.iconCls || ''}`} />}
                   <div>
                     <div className="font-semibold text-sm text-gray-900">{formatDate(e.date)}</div>
                     {e.mood && <div className="text-[11px] text-gray-500">{MOOD_LABEL[e.mood]}</div>}
